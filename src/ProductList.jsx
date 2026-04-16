@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {useSelector, useDispatch} from "react-redux"
-import {addItem} from "./CartSlice"
+import {addItem} from "./CartSlice"  //importing the addItem reducer or function
 import './ProductList.css'
 import CartItem from './CartItem';
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-    const cart = useSelector(state => state.cart.items)
-    const dispatch = useDispatch()
+    const cart = useSelector(state => state.cart.items)  //to select the cart items from the store
+    const dispatch = useDispatch()  //will be used to call function or reducers from the store
     const plantsArray = [
         {
             category: "Air Purifying Plants",
@@ -257,7 +257,6 @@ function ProductList({ onHomeClick }) {
     const handlePlantsClick = (e) => {
         e.preventDefault();
         setShowPlants(true); // Set showAboutUs to true when "About Us" link is clicked
-        dispatch(addItem(e.name))
         setShowCart(false); // Hide the cart when navigating to About Us
     };
 
@@ -289,10 +288,26 @@ function ProductList({ onHomeClick }) {
             {!showCart ? (
                 <div className="product-grid">
                     {
-                        plantsArray.map((item) => (
-                            <div classname = "product-card">
-                                <h2>{item.name}</h2>
-                                <img src = {item.image} alt = {item.name}></img>
+                        plantsArray.map(item => (  //going through each plant category, contained in a parent div
+                            <div>
+                                <div className = "plantname_heading">
+                                    <h2 className = "plant_heading">{item.category}</h2>
+                                </div>
+                                <div className = "product-list">
+                                    {   //ternary operator very essential for choosing the correct styles and updating thing real time
+                                        item.plants.map((item2) => (   //laying out the tiles for each plant in a category, contained in a parent div, also see how we use dispatch to call addItem by supplying the payload
+                                            <div className = "product-card">  
+                                            
+                                                    <div className = "product-title">{item2.name}</div>
+                                                    <img className = "product-image" src = {item2.image} alt = {item2.name}></img>
+                                                    <div className = "product-price">{item2.cost}</div>
+                                                    <div>{item2.description}</div>
+                                                    <button name = {item2.name} className = {cart.find((item) => (item.name === item2.name && item.quantity > 0)) ? "product-button added-to-cart":"product-button"} onClick = {() => {dispatch(addItem({name: item2.name, image: item2.image, cost: item2.cost}))}}>Add To Cart</button>  
+                                                
+                                            </div>
+                                        ))
+                                    }
+                                </div>
                             </div>
                         ))
                     }
